@@ -8,6 +8,7 @@ import { GenericProxyRequest } from '@/lib/types/api';
 
 // Force this route to be dynamic
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // Lazy load services to avoid build-time environment variable access
 function getServices() {

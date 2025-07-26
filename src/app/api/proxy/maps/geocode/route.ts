@@ -7,6 +7,7 @@ import { Logger } from '@/lib/utils/logger';
 
 // Force this route to be dynamic
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // Lazy load proxy to avoid build-time environment variable access
 function getGoogleMapsProxy() {

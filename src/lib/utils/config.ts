@@ -1,8 +1,23 @@
 import { ApiKeyConfig } from '@/lib/types/auth';
 
+// Safe environment variable access with runtime checks
+function safeGetEnv(key: string, defaultValue: string = ''): string {
+  if (typeof window !== 'undefined') {
+    // Client-side - return empty string
+    return defaultValue;
+  }
+  
+  try {
+    return process.env[key] || defaultValue;
+  } catch {
+    // Fallback during build time or any access issues
+    return defaultValue;
+  }
+}
+
 export class Config {
   static getGoogleMapsApiKey(): string {
-    const key = process.env.GOOGLE_MAPS_API_KEY;
+    const key = safeGetEnv('GOOGLE_MAPS_API_KEY');
     if (!key) {
       throw new Error('GOOGLE_MAPS_API_KEY environment variable is not set');
     }
@@ -10,7 +25,7 @@ export class Config {
   }
 
   static getApiKeys(): ApiKeyConfig[] {
-    const apiKeysEnv = process.env.API_KEYS || '';
+    const apiKeysEnv = safeGetEnv('API_KEYS');
     if (!apiKeysEnv) {
       return [];
     }
@@ -22,18 +37,18 @@ export class Config {
         name,
         permissions: permissions ? permissions.split(',') : [],
         rateLimit: {
-          requests: parseInt(process.env.DEFAULT_RATE_LIMIT || '100'),
-          window: parseInt(process.env.DEFAULT_RATE_WINDOW || '3600')
+          requests: parseInt(safeGetEnv('DEFAULT_RATE_LIMIT', '100')),
+          window: parseInt(safeGetEnv('DEFAULT_RATE_WINDOW', '3600'))
         }
       };
     });
   }
 
   static getLogLevel(): string {
-    return process.env.LOG_LEVEL || 'info';
+    return safeGetEnv('LOG_LEVEL', 'info');
   }
 
   static isRequestLoggingEnabled(): boolean {
-    return process.env.ENABLE_REQUEST_LOGGING === 'true';
+    return safeGetEnv('ENABLE_REQUEST_LOGGING') === 'true';
   }
 } 

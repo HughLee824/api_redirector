@@ -1,3 +1,18 @@
+// Safe environment variable access with runtime checks
+function safeGetEnv(key: string, defaultValue: string = ''): string {
+  if (typeof window !== 'undefined') {
+    // Client-side - return empty string
+    return defaultValue;
+  }
+  
+  try {
+    return process.env[key] || defaultValue;
+  } catch {
+    // Fallback during build time or any access issues
+    return defaultValue;
+  }
+}
+
 export class Logger {
   private static formatMessage(level: string, message: string, meta?: any): string {
     const timestamp = new Date().toISOString();
@@ -18,14 +33,14 @@ export class Logger {
   }
 
   static debug(message: string, meta?: any): void {
-    const logLevel = process.env.LOG_LEVEL || 'info';
+    const logLevel = safeGetEnv('LOG_LEVEL', 'info');
     if (logLevel === 'debug') {
       console.debug(this.formatMessage('debug', message, meta));
     }
   }
 
   static logRequest(method: string, url: string, apiKey?: string, status?: number): void {
-    if (process.env.ENABLE_REQUEST_LOGGING === 'true') {
+    if (safeGetEnv('ENABLE_REQUEST_LOGGING') === 'true') {
       this.info('Request processed', {
         method,
         url,

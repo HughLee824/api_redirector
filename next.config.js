@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
+  // Remove deprecated appDir option
   async headers() {
     return [
       {
@@ -16,7 +14,9 @@ const nextConfig = {
         ]
       }
     ]
-  }
+  },
+  // Ensure API routes are never statically optimized
+  output: 'standalone'
 }
 
 module.exports = nextConfig 
