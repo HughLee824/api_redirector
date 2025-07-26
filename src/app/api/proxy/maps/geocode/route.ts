@@ -16,16 +16,27 @@ function getGoogleMapsProxy() {
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('[DEBUG] Google Maps geocode route called');
+    console.log('[DEBUG] Request URL:', request.url);
+    console.log('[DEBUG] Request method:', request.method);
+    console.log('[DEBUG] Headers:', Object.fromEntries(request.headers.entries()));
+    
     // Authentication
     const authResult = await authMiddleware(request);
     if (!authResult.success) {
+      console.log('[DEBUG] Auth failed:', authResult.error);
       return ResponseHelper.unauthorized(authResult.error);
     }
 
     const { apiKey, config } = authResult;
+    console.log('[DEBUG] Auth successful, API key:', apiKey?.substring(0, 8) + '...');
+    
     if (!config) {
+      console.log('[DEBUG] No config found for API key');
       return ResponseHelper.unauthorized('Invalid configuration');
     }
+    
+    console.log('[DEBUG] Config found:', { name: config.name, permissions: config.permissions });
 
     // Rate limiting
     const rateLimitResult = await rateLimitMiddleware(apiKey!, config, 'geocode');
@@ -37,8 +48,11 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const address = url.searchParams.get('address');
     const latlng = url.searchParams.get('latlng');
+    
+    console.log('[DEBUG] Extracted parameters:', { address, latlng });
 
     if (!address && !latlng) {
+      console.log('[DEBUG] Missing required parameters');
       return ResponseHelper.error('BAD_REQUEST', 'Either address or latlng parameter is required');
     }
 
@@ -54,14 +68,21 @@ export async function GET(request: NextRequest) {
     });
 
     // Call Google Maps API
+    console.log('[DEBUG] Creating Google Maps proxy...');
     const googleMapsProxy = getGoogleMapsProxy();
+    console.log('[DEBUG] Google Maps proxy created successfully');
+    
     let proxyResponse;
     if (address) {
+      console.log('[DEBUG] Calling geocode with address:', address);
       proxyResponse = await googleMapsProxy.geocode(address, additionalParams);
     } else {
       const [lat, lng] = latlng!.split(',').map(Number);
+      console.log('[DEBUG] Calling reverse geocode with coords:', lat, lng);
       proxyResponse = await googleMapsProxy.reverseGeocode(lat, lng, additionalParams);
     }
+    
+    console.log('[DEBUG] Proxy response status:', proxyResponse.status);
 
     // Log the request
     Logger.logRequest('GET', `/api/proxy/maps/geocode`, apiKey, proxyResponse.status);
@@ -76,6 +97,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
+    console.log('[DEBUG] Error in geocode route:', error);
     Logger.error('Error in Google Maps geocode proxy', error);
     return ResponseHelper.internalError('Proxy request failed');
   }

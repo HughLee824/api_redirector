@@ -7,11 +7,17 @@ export class GoogleMapsProxy extends BaseProxy {
   baseUrl = 'https://maps.googleapis.com/maps/api';
 
   transformRequest(req: ProxyRequest): ProxyRequest {
+    console.log('[DEBUG] GoogleMapsProxy.transformRequest called');
+    console.log('[DEBUG] Original request URL:', req.url);
+    
     // Add Google Maps API key to the request
     const url = new URL(req.url);
-    url.searchParams.set('key', Config.getGoogleMapsApiKey());
+    const apiKey = Config.getGoogleMapsApiKey();
+    console.log('[DEBUG] Google Maps API key loaded:', apiKey ? apiKey.substring(0, 8) + '...' : 'NOT FOUND');
+    
+    url.searchParams.set('key', apiKey);
 
-    return {
+    const transformedRequest = {
       ...req,
       url: url.toString(),
       headers: {
@@ -19,6 +25,9 @@ export class GoogleMapsProxy extends BaseProxy {
         'User-Agent': 'API-Redirector/1.0'
       }
     };
+    
+    console.log('[DEBUG] Transformed request URL:', transformedRequest.url);
+    return transformedRequest;
   }
 
   transformResponse(res: ProxyResponse): ProxyResponse {
