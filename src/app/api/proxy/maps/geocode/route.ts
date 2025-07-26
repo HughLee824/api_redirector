@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { apiKey, config } = authResult;
-    console.log('[DEBUG] Auth successful, API key:', apiKey?.substring(0, 8) + '...');
+    console.log('[DEBUG] Auth successful, API key:', '***REDACTED***');
     
     if (!config) {
       console.log('[DEBUG] No config found for API key');
@@ -88,6 +88,7 @@ export async function GET(request: NextRequest) {
     Logger.logRequest('GET', `/api/proxy/maps/geocode`, apiKey, proxyResponse.status);
 
     // Return proxied response
+    console.log('[DEBUG] Returning successful response with status:', proxyResponse.status);
     return new Response(proxyResponse.data, {
       status: proxyResponse.status,
       headers: {

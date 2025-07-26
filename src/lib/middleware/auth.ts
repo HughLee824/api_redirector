@@ -35,7 +35,7 @@ export async function authMiddleware(req: NextRequest): Promise<AuthResult> {
     };
   }
   
-  console.log('[DEBUG] Token found:', token.substring(0, 8) + '...');
+  console.log('[DEBUG] Token found:', '***REDACTED***');
   const result = ApiKeyAuth.validateApiKey(token);
   console.log('[DEBUG] Validation result:', { success: result.success, error: result.error });
   

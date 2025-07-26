@@ -10,6 +10,16 @@ export async function GET(request: NextRequest) {
   try {
     console.log('[DEBUG] Debug endpoint called');
     
+    // Mask sensitive headers
+    const safeHeaders = Object.fromEntries(
+      Object.entries(request.headers).map(([key, value]) => [
+        key,
+        key.toLowerCase().includes('auth') || key.toLowerCase().includes('key') 
+          ? '***REDACTED***' 
+          : value
+      ])
+    );
+
     const debugInfo = {
       timestamp: new Date().toISOString(),
       environment: {
@@ -20,9 +30,9 @@ export async function GET(request: NextRequest) {
         apiKeysLength: process.env.API_KEYS?.length || 0
       },
       request: {
-        url: request.url,
+        url: request.url.replace(/[?&](auth_token|api_key|key)=[^&]+/g, '$1=***REDACTED***'),
         method: request.method,
-        headers: Object.fromEntries(request.headers.entries())
+        headers: safeHeaders
       },
       config: {
         canLoadGoogleMapsKey: false,

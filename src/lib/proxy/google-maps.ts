@@ -13,7 +13,7 @@ export class GoogleMapsProxy extends BaseProxy {
     // Add Google Maps API key to the request
     const url = new URL(req.url);
     const apiKey = Config.getGoogleMapsApiKey();
-    console.log('[DEBUG] Google Maps API key loaded:', apiKey ? apiKey.substring(0, 8) + '...' : 'NOT FOUND');
+    console.log('[DEBUG] Google Maps API key loaded:', apiKey ? '***REDACTED***' : 'NOT FOUND');
     
     url.searchParams.set('key', apiKey);
 
@@ -26,7 +26,9 @@ export class GoogleMapsProxy extends BaseProxy {
       }
     };
     
-    console.log('[DEBUG] Transformed request URL:', transformedRequest.url);
+    // Mask API key in URL for security
+    const maskedUrl = transformedRequest.url.replace(/key=[^&]+/, 'key=***REDACTED***');
+    console.log('[DEBUG] Transformed request URL:', maskedUrl);
     return transformedRequest;
   }
 
