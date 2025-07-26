@@ -5,7 +5,13 @@ import { GoogleMapsProxy } from '@/lib/proxy/google-maps';
 import { ResponseHelper } from '@/lib/utils/response';
 import { Logger } from '@/lib/utils/logger';
 
-const googleMapsProxy = new GoogleMapsProxy();
+// Force this route to be dynamic
+export const dynamic = 'force-dynamic';
+
+// Lazy load proxy to avoid build-time environment variable access
+function getGoogleMapsProxy() {
+  return new GoogleMapsProxy();
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -47,6 +53,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Call Google Maps API
+    const googleMapsProxy = getGoogleMapsProxy();
     let proxyResponse;
     if (address) {
       proxyResponse = await googleMapsProxy.geocode(address, additionalParams);

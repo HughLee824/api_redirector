@@ -6,9 +6,15 @@ import { ResponseHelper } from '@/lib/utils/response';
 import { Logger } from '@/lib/utils/logger';
 import { GenericProxyRequest } from '@/lib/types/api';
 
-const services = {
-  'google-maps': new GoogleMapsProxy()
-};
+// Force this route to be dynamic
+export const dynamic = 'force-dynamic';
+
+// Lazy load services to avoid build-time environment variable access
+function getServices() {
+  return {
+    'google-maps': new GoogleMapsProxy()
+  };
+}
 
 async function handleProxyRequest(request: NextRequest, method: string) {
   try {
@@ -47,6 +53,7 @@ async function handleProxyRequest(request: NextRequest, method: string) {
     }
 
     // Check if service is supported
+    const services = getServices();
     const proxyService = services[requestData.service as keyof typeof services];
     if (!proxyService) {
       return ResponseHelper.error('BAD_REQUEST', `Unsupported service: ${requestData.service}`);

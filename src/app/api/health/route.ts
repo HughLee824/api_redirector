@@ -1,6 +1,9 @@
 import { NextRequest } from 'next/server';
 import { ResponseHelper } from '@/lib/utils/response';
 
+// Force this route to be dynamic
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const health = {
