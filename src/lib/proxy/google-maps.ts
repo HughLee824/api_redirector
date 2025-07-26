@@ -4,7 +4,7 @@ import { Config } from '@/lib/utils/config';
 
 export class GoogleMapsProxy extends BaseProxy {
   name = 'google-maps';
-  baseUrl = 'https://maps.googleapis.com/maps/api';
+  baseUrl = 'https://maps.googleapis.com/maps/api/';
 
   transformRequest(req: ProxyRequest): ProxyRequest {
     console.log('[DEBUG] GoogleMapsProxy.transformRequest called');
