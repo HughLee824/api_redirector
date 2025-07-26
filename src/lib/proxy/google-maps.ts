@@ -56,7 +56,7 @@ export class GoogleMapsProxy extends BaseProxy {
 
     const request: ProxyRequest = {
       method: 'GET',
-      url: this.buildUrl('/geocode/xml', geocodeParams),
+      url: this.buildUrl('geocode/xml', geocodeParams),
       headers: {}
     };
 
@@ -71,7 +71,7 @@ export class GoogleMapsProxy extends BaseProxy {
 
     const request: ProxyRequest = {
       method: 'GET',
-      url: this.buildUrl('/geocode/xml', geocodeParams),
+      url: this.buildUrl('geocode/xml', geocodeParams),
       headers: {}
     };
 
