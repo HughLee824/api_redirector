@@ -89,13 +89,16 @@ export async function GET(request: NextRequest) {
 
     // Return proxied response
     console.log('[DEBUG] Returning successful JSON response with status:', proxyResponse.status);
-    return new Response(proxyResponse.data, {
-      status: proxyResponse.status,
-      headers: {
-        'Content-Type': 'application/json',
-        ...proxyResponse.headers
+    return new Response(
+      typeof proxyResponse.data === 'string' ? proxyResponse.data : JSON.stringify(proxyResponse.data),
+      {
+        status: proxyResponse.status,
+        headers: {
+          'Content-Type': 'application/json',
+          ...proxyResponse.headers
+        }
       }
-    });
+    );
 
   } catch (error) {
     console.log('[DEBUG] Error in geocode JSON route:', error);
