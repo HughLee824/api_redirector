@@ -89,13 +89,19 @@ export async function GET(request: NextRequest) {
 
     // Return proxied response
     console.log('[DEBUG] Returning successful JSON response with status:', proxyResponse.status);
+    
+    // Ensure we don't have content-type conflicts
+    const cleanHeaders = { ...proxyResponse.headers };
+    delete cleanHeaders['content-type'];
+    delete cleanHeaders['Content-Type'];
+    
     return new Response(
       typeof proxyResponse.data === 'string' ? proxyResponse.data : JSON.stringify(proxyResponse.data),
       {
         status: proxyResponse.status,
         headers: {
           'Content-Type': 'application/json',
-          ...proxyResponse.headers
+          ...cleanHeaders
         }
       }
     );
