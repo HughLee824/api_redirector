@@ -17,4 +17,14 @@ export interface ProxyService {
   transformRequest(req: ProxyRequest): ProxyRequest;
   transformResponse(res: ProxyResponse): ProxyResponse;
   proxy(req: ProxyRequest): Promise<ProxyResponse>;
+}
+
+// Google Maps specific types
+export type OutputFormat = 'xml' | 'json';
+
+export interface GoogleMapsGeocodeRequest {
+  address?: string;
+  latlng?: string;
+  format: OutputFormat;
+  params?: Record<string, any>;
 } 

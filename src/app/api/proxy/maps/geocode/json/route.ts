@@ -16,7 +16,7 @@ function getGoogleMapsProxy() {
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('[DEBUG] Google Maps geocode route called');
+    console.log('[DEBUG] Google Maps geocode JSON route called');
     console.log('[DEBUG] Request URL:', request.url);
     console.log('[DEBUG] Request method:', request.method);
     console.log('[DEBUG] Headers:', Object.fromEntries(request.headers.entries()));
@@ -67,39 +67,39 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Call Google Maps API
+    // Call Google Maps API with JSON format
     console.log('[DEBUG] Creating Google Maps proxy...');
     const googleMapsProxy = getGoogleMapsProxy();
     console.log('[DEBUG] Google Maps proxy created successfully');
     
     let proxyResponse;
     if (address) {
-      console.log('[DEBUG] Calling geocode with address (XML format - backward compatible):', address);
-      proxyResponse = await googleMapsProxy.geocode(address, 'xml', additionalParams);
+      console.log('[DEBUG] Calling geocode with address (JSON format):', address);
+      proxyResponse = await googleMapsProxy.geocode(address, 'json', additionalParams);
     } else {
       const [lat, lng] = latlng!.split(',').map(Number);
-      console.log('[DEBUG] Calling reverse geocode with coords (XML format - backward compatible):', lat, lng);
-      proxyResponse = await googleMapsProxy.reverseGeocode(lat, lng, 'xml', additionalParams);
+      console.log('[DEBUG] Calling reverse geocode with coords (JSON format):', lat, lng);
+      proxyResponse = await googleMapsProxy.reverseGeocode(lat, lng, 'json', additionalParams);
     }
     
     console.log('[DEBUG] Proxy response status:', proxyResponse.status);
 
     // Log the request
-    Logger.logRequest('GET', `/api/proxy/maps/geocode`, apiKey, proxyResponse.status);
+    Logger.logRequest('GET', `/api/proxy/maps/geocode/json`, apiKey, proxyResponse.status);
 
     // Return proxied response
-    console.log('[DEBUG] Returning successful response with status:', proxyResponse.status);
+    console.log('[DEBUG] Returning successful JSON response with status:', proxyResponse.status);
     return new Response(proxyResponse.data, {
       status: proxyResponse.status,
       headers: {
-        'Content-Type': 'application/xml',
+        'Content-Type': 'application/json',
         ...proxyResponse.headers
       }
     });
 
   } catch (error) {
-    console.log('[DEBUG] Error in geocode route:', error);
-    Logger.error('Error in Google Maps geocode proxy', error);
+    console.log('[DEBUG] Error in geocode JSON route:', error);
+    Logger.error('Error in Google Maps geocode JSON proxy', error);
     return ResponseHelper.internalError('Proxy request failed');
   }
 } 
