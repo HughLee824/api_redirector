@@ -4,7 +4,7 @@ import { Config } from '@/lib/utils/config';
 
 export class GoogleMapsProxy extends BaseProxy {
   name = 'google-maps';
-  baseUrl = 'https://maps.googleapis.com/maps/api/';
+  baseUrl = 'https://maps.googleapis.com/';
 
   transformRequest(req: ProxyRequest): ProxyRequest {
     console.log('[DEBUG] GoogleMapsProxy.transformRequest called');
@@ -61,7 +61,7 @@ export class GoogleMapsProxy extends BaseProxy {
       ...params
     };
 
-    const endpoint = `geocode/${format}`;
+    const endpoint = `maps/api/geocode/${format}`;
 
     const request: ProxyRequest = {
       method: 'GET',
@@ -78,7 +78,7 @@ export class GoogleMapsProxy extends BaseProxy {
       ...params
     };
 
-    const endpoint = `geocode/${format}`;
+    const endpoint = `maps/api/geocode/${format}`;
 
     const request: ProxyRequest = {
       method: 'GET',
