@@ -19,11 +19,17 @@ export abstract class BaseProxy implements ProxyService {
       });
 
       // Make the actual request
-      const response = await fetch(transformedReq.url, {
+      const fetchOptions: RequestInit = {
         method: transformedReq.method,
         headers: transformedReq.headers,
-        body: transformedReq.body ? JSON.stringify(transformedReq.body) : undefined,
-      });
+      };
+
+      // Only add body for non-GET requests
+      if (transformedReq.method !== 'GET' && transformedReq.body) {
+        fetchOptions.body = JSON.stringify(transformedReq.body);
+      }
+
+      const response = await fetch(transformedReq.url, fetchOptions);
 
       // Read response
       const responseText = await response.text();
@@ -45,7 +51,12 @@ export abstract class BaseProxy implements ProxyService {
       return this.transformResponse(proxyResponse);
       
     } catch (error) {
-      Logger.error(`Error proxying request to ${this.name}`, error);
+      Logger.error(`Error proxying request to ${this.name}`, {
+        url: req.url,
+        method: req.method,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
       throw new Error(`Proxy error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
