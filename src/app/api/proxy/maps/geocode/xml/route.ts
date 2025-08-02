@@ -89,22 +89,23 @@ export async function GET(request: NextRequest) {
 
     // Return proxied response
     console.log('[DEBUG] Returning successful XML response with status:', proxyResponse.status);
+    console.log('[DEBUG] Response data type:', typeof proxyResponse.data);
+    console.log('[DEBUG] Response data preview:', String(proxyResponse.data).substring(0, 100));
     
-    // Ensure we don't have content-type conflicts
-    const cleanHeaders = { ...proxyResponse.headers };
-    delete cleanHeaders['content-type'];
-    delete cleanHeaders['Content-Type'];
+    // Simplified headers - only essential ones to avoid Vercel conflicts
+    const responseBody = typeof proxyResponse.data === 'string' ? proxyResponse.data : JSON.stringify(proxyResponse.data);
     
-    return new Response(
-      typeof proxyResponse.data === 'string' ? proxyResponse.data : JSON.stringify(proxyResponse.data),
-      {
-        status: proxyResponse.status,
-        headers: {
-          'Content-Type': 'application/xml',
-          ...cleanHeaders
-        }
+    console.log('[DEBUG] Final response body length:', responseBody.length);
+    
+    return new Response(responseBody, {
+      status: proxyResponse.status,
+      headers: {
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'no-cache',
+        'Access-Control-Allow-Origin': '*',
+        'X-Proxy-Service': 'google-maps-xml'
       }
-    );
+    });
 
   } catch (error) {
     console.log('[DEBUG] Error in geocode XML route:', error);
